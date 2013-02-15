@@ -37,7 +37,6 @@ Copyright: 2013, MoonRay, LLC (email : tron@ontraport.com)
  * @since 3.5.1
  *
  * @global Array $sessionslap_errors
- * @global String $SESSION_SLAP_SESSIONLIFE
  */
 if (!defined('SESSION_SLAP_PATH') || !defined('SESSION_SLAP_URI_PATH')){
 	define('SESSION_SLAP_PATH', plugin_dir_path( __FILE__ ));
@@ -64,6 +63,7 @@ if (empty($SESSION_SLAP_SESSIONLIFE)){
  * @return Array Default Settings.
  */
 function sessionslap_get_default_options() {
+	global $SESSION_SLAP_SESSIONLIFE;
 	$options = array(
 		'enabled'           => 'on',
 		'alerts'            => 'on',
@@ -72,7 +72,6 @@ function sessionslap_get_default_options() {
 	);
 	return $options;
 }
-
 
 /**
  * Initialize Options
