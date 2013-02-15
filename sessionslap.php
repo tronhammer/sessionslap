@@ -37,6 +37,7 @@ Copyright: 2013, MoonRay, LLC (email : tron@ontraport.com)
  * @since 3.5.1
  *
  * @global Array $sessionslap_errors
+ * @global String $SESSION_SLAP_SESSIONLIFE
  */
 if (!defined('SESSION_SLAP_PATH') || !defined('SESSION_SLAP_URI_PATH')){
 	define('SESSION_SLAP_PATH', plugin_dir_path( __FILE__ ));
@@ -47,6 +48,9 @@ global $SESSION_SLAP_SESSIONLIFE;
 	
 if (empty($SESSION_SLAP_SESSIONLIFE)){
 	$SESSION_SLAP_SESSIONLIFE = ini_get("session.gc_maxlifetime");
+	if (!isset($SESSION_SLAP_SESSIONLIFE) || empty($SESSION_SLAP_SESSIONLIFE) || is_null($SESSION_SLAP_SESSIONLIFE)){
+		$SESSION_SLAP_SESSIONLIFE = (24 * 60); // If the value is empty, or access restricted, use PHP's 24 minute default settings.
+	}
 }
 
 /**
@@ -63,7 +67,7 @@ function sessionslap_get_default_options() {
 	$options = array(
 		'enabled'           => 'on',
 		'alerts'            => 'on',
-		'interval_duration' => ($SESSION_SLAP_SESSIONLIFE * 60) - 5, // current INI setting minus 5 minutes.
+		'interval_duration' => ($SESSION_SLAP_SESSIONLIFE / 60) - 5, // current INI setting minus 5 minutes.
 		'hang_duration'     => 5
 	);
 	return $options;
