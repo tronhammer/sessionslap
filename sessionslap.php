@@ -254,12 +254,10 @@ function sessionslap_validate($values){
 	global $SESSIONSLAP_ERRORS;
 	$defaults           = sessionslap_get_default_options();
 	$SESSIONSLAP_ERRORS = array();
-	error_log( var_export( $_POST, true ));
 	if (is_array($values)){
 		foreach($values as $valueName => $value){
 			$error = 0;
 			$value = trim( $value );
-			error_log($valueName ." = ". $value);
 			switch($valueName){
 				// On Off value checks
 				case 'enabled':
@@ -287,8 +285,6 @@ function sessionslap_validate($values){
 			}
 		}
 	}
-	
-	error_log( var_export($values));
 	
 	if (count($defaults)){
 		// Add missing defaults which should trigger extras in array_diff checks
