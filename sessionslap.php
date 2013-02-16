@@ -207,8 +207,12 @@ function sessionslap_alerts_description() {
 function sessionslap_enabled_checkbox_display(){
 	$defaults = sessionslap_get_default_options();
 	$options  = get_option('plugin_sessionslap_options');
-	$selected = ($options['enabled'] == 'on' || (empty($options['enabled']) && $defaults['enabled'] == 'on') ) ? ' checked="checked"' : '';
-	echo '<input id="plugin_sessionslap_options_enabled" name="plugin_sessionslap_options[enabled]" size="40" type="checkbox" value="on"' . $selected . '/>';
+	$on_selected  = ($options['enabled'] == 'on' || (empty($options['enabled']) && $defaults['enabled'] == 'on') ? ' selected="selected"' : '');
+	$off_selected = ($options['enabled'] == 'off' || (empty($options['enabled']) && $defaults['enabled'] == 'off') ? ' selected="selected"' : '');
+	echo '<select id="plugin_sessionslap_options_enabled" name="plugin_sessionslap_options[enabled]">';
+	echo '<option value="on"' . $on_selected . '>' . __('On', 'sessionslap') . '</option>';
+	echo '<option value="off"' . $off_selected . '>' . __('Off', 'sessionslap') . '</option>';
+	echo '</select>';
 }
 function sessionslap_interval_duration_input_display(){
 	$defaults = sessionslap_get_default_options();
@@ -248,55 +252,43 @@ function sessionslap_alerts_dropdown_display(){
  */
 function sessionslap_validate($values){
 	global $SESSIONSLAP_ERRORS;
-	$defaults = sessionslap_get_default_options();
+	$defaults           = sessionslap_get_default_options();
 	$SESSIONSLAP_ERRORS = array();
+	error_log( var_export( $_POST, true ));
 	if (is_array($values)){
 		foreach($values as $valueName => $value){
+			$error = 0;
 			$value = trim( $value );
+			error_log($valueName ." = ". $value);
 			switch($valueName){
+				// On Off value checks
 				case 'enabled':
-					if ( strtolower( $value ) != 'on' && strtolower( $value ) != 'off'){
-						$values[ $valueName ] = $defaults[ $valueName ];
-						$SESSIONSLAP_ERRORS[ $valueName ] = array(
-							'value'=>$value, 
-							'fn'=>__('Enabled', 'sessionslap')
-						);
-					}
-					unset( $defaults[ $valueName ]);
-					break;
-				case 'interval_duration':
-					if (!is_numeric( $value )){
-						$values[ $valueName ] = $defaults[ $valueName ];
-						$SESSIONSLAP_ERRORS[ $valueName ] = array(
-							'value'=>$value, 
-							'fn'=>__('Interval Duration', 'sessionslap')
-						);
-					}
-					unset( $defaults[ $valueName ]);
-					break;
-				case 'hang_duration':
-					if (!is_numeric( $value )){
-						$values[ $valueName ] = $defaults[ $valueName ];
-						$SESSIONSLAP_ERRORS[ $valueName ] = array(
-							'value'=>$value, 
-							'fn'=>__('Alert Hang Duration', 'sessionslap')
-						);
-					}
-					unset( $defaults[ $valueName ]);
-					break;
 				case 'alerts':
 					if ( strtolower( $value ) != 'on' && strtolower( $value ) != 'off'){
-						$values[ $valueName ] = $defaults[ $valueName ];
-						$SESSIONSLAP_ERRORS[ $valueName ] = array(
-							'value'=>$value, 
-							'fn'=>__('Alerts', 'sessionslap')
-						);
+						$error++;
+					}
+					unset( $defaults[ $valueName ]);
+					break;
+				// Numeric value checks
+				case 'interval_duration':
+				case 'hang_duration':
+					if (!is_numeric( $value )){
+						$error++;
 					}
 					unset( $defaults[ $valueName ]);
 					break;
 			}
+			if ($error){
+				$values[ $valueName ] = $defaults[ $valueName ];
+				$SESSIONSLAP_ERRORS[ $valueName ] = array(
+					'value' => $value, 
+					'fn'    => $valueName
+				);
+			}
 		}
 	}
+	
+	error_log( var_export($values));
 	
 	if (count($defaults)){
 		// Add missing defaults which should trigger extras in array_diff checks
