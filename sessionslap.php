@@ -319,9 +319,7 @@ add_action('init', 'sessionslap_ping');
 function sessionslap_ping(){
 	// Register JavaScript
 	wp_enqueue_script('jquery');
-	
-	error_log("including the css from ".plugins_url( 'sessionslap.css' , __FILE__ ));
-	
+		
 	// Register CSS
 	wp_register_style(
 		"sessionslap_css",
