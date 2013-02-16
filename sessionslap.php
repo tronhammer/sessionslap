@@ -36,13 +36,14 @@ Copyright: 2013, MoonRay, LLC (email : tron@ontraport.com)
  * @package Session Slap
  * @since 3.5.1
  *
- * @global Array $sessionslap_errors
+ * @global Array $SESSIONSLAP_ERRORS
+ * @global Array $SESSION_SLAP_SESSIONLIFE
  */
 if (!defined('SESSION_SLAP_PATH') || !defined('SESSION_SLAP_URI_PATH')){
 	define('SESSION_SLAP_PATH', plugin_dir_path( __FILE__ ));
 	define('SESSION_SLAP_URI_PATH', plugin_dir_url( __FILE__ ));
 }
-global $sessionslap_errors;
+global $SESSIONSLAP_ERRORS;
 global $SESSION_SLAP_SESSIONLIFE;
 	
 if (empty($SESSION_SLAP_SESSIONLIFE)){
@@ -89,7 +90,9 @@ function sessionslap_options_init() {
 		$sessionslap_stored_options = sessionslap_get_default_options();
 		update_option( 'plugin_sessionslap_options', $sessionslap_stored_options );
 	} else {
+		// Validate currently stored options
 		$sessionslap_valid_opts = sessionslap_validate( $sessionslap_stored_options );
+		// Check for discrepencies and reapply defaults to existing invalid options
 		if (count( array_diff_assoc( $sessionslap_valid_opts, $sessionslap_stored_options ) ) ){
 			update_option( 'plugin_sessionslap_options', $sessionslap_valid_opts );
 		}
@@ -183,7 +186,7 @@ function sessionslap_admin_init(){
  * to build out the Session Slap settings page.
  */
 function sessionslap_enabled_description() {
-	echo '<p>' . __('This is a simple way to toggle the availability Session Slap plugin without having to deactivate.', 'sessionslap') . '</p>';
+	echo '<p>' . __('This is a simple way to toggle the Slap plugin availability without having to deactivate.', 'sessionslap') . '</p>';
 }
 function sessionslap_duration_description() {
 	echo '<p>' . __('These duration settings will configure the interval between each keep-alive ping to the server.', 'sessionslap') . '</p>';
@@ -234,7 +237,7 @@ function sessionslap_alerts_dropdown_display(){
  * Utilized by WordPress filters during option updates 
  * to sterilize input provided by admin. This will also 
  * report inconsistancies and invalid options to the 
- * $sessionslap_errors variable
+ * $SESSIONSLAP_ERRORS variable
  *
  * @since 1.7.1
  *
@@ -244,9 +247,9 @@ function sessionslap_alerts_dropdown_display(){
  * @return Array Dictionary of sanitized options.
  */
 function sessionslap_validate($values){
-	global $sessionslap_errors;
+	global $SESSIONSLAP_ERRORS;
 	$defaults = sessionslap_get_default_options();
-	$sessionslap_errors = array();
+	$SESSIONSLAP_ERRORS = array();
 	if (is_array($values)){
 		foreach($values as $valueName => $value){
 			$value = trim( $value );
@@ -254,7 +257,7 @@ function sessionslap_validate($values){
 				case 'enabled':
 					if ( strtolower( $value ) != 'on' && strtolower( $value ) != 'off'){
 						$values[ $valueName ] = $defaults[ $valueName ];
-						$sessionslap_errors[ $valueName ] = array(
+						$SESSIONSLAP_ERRORS[ $valueName ] = array(
 							'value'=>$value, 
 							'fn'=>__('Enabled', 'sessionslap')
 						);
@@ -264,7 +267,7 @@ function sessionslap_validate($values){
 				case 'interval_duration':
 					if (!is_numeric( $value )){
 						$values[ $valueName ] = $defaults[ $valueName ];
-						$sessionslap_errors[ $valueName ] = array(
+						$SESSIONSLAP_ERRORS[ $valueName ] = array(
 							'value'=>$value, 
 							'fn'=>__('Interval Duration', 'sessionslap')
 						);
@@ -274,7 +277,7 @@ function sessionslap_validate($values){
 				case 'hang_duration':
 					if (!is_numeric( $value )){
 						$values[ $valueName ] = $defaults[ $valueName ];
-						$sessionslap_errors[ $valueName ] = array(
+						$SESSIONSLAP_ERRORS[ $valueName ] = array(
 							'value'=>$value, 
 							'fn'=>__('Alert Hang Duration', 'sessionslap')
 						);
@@ -284,7 +287,7 @@ function sessionslap_validate($values){
 				case 'alerts':
 					if ( strtolower( $value ) != 'on' && strtolower( $value ) != 'off'){
 						$values[ $valueName ] = $defaults[ $valueName ];
-						$sessionslap_errors[ $valueName ] = array(
+						$SESSIONSLAP_ERRORS[ $valueName ] = array(
 							'value'=>$value, 
 							'fn'=>__('Alerts', 'sessionslap')
 						);
@@ -370,12 +373,12 @@ function sessionslap_menu_item() {
  * @uses submit_button()
  */
 function sessionslap_options_page(){ 
-	global $sessionslap_errors;
+	global $SESSIONSLAP_ERRORS;
 	if ( isset( $_GET['settings-updated'] ) ){
 		echo '<div class="updated"><p>' . __('Session Slap settings updated successfully.', 'sessionslap') . '</p></div>';
-		if (count($sessionslap_errors)){
+		if (count($SESSIONSLAP_ERRORS)){
 			echo '<div class="error"><p>' . __('There was an issue loading the following fields.', 'sessionslap').'</p><ul>';
-			foreach($sessionslap_errors as $fieldName => $fieldInfo){
+			foreach($SESSIONSLAP_ERRORS as $fieldName => $fieldInfo){
 				echo '<li style="margin-left:30px"><strong>' . $fieldInfo['fn'] . '</strong></li>';
 			}
 			echo '</ul></div>';
