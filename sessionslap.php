@@ -141,7 +141,7 @@ function sessionslap_admin_init(){
 	add_settings_field(
 		/* id */       'sessionslap_enabled_checkbox', 
 		/* title */    __('Enabled', 'sessionslap'), 
-		/* callback */ 'sessionslap_enabled_checkbox_display', 
+		/* callback */ 'sessionslap_enabled_dropdown_display', 
 		/* page */     'sessionslap_options', 
 		/* section */  'plugin_sessionslap_enabled'
 		/* args */
@@ -204,36 +204,36 @@ function sessionslap_alerts_description() {
  * @uses sessionslap_get_default_options()
  * @uses get_option()
  */
-function sessionslap_enabled_checkbox_display(){
+function sessionslap_input($option){
 	$defaults = sessionslap_get_default_options();
 	$options  = get_option('plugin_sessionslap_options');
-	$on_selected  = ($options['enabled'] == 'on' || (empty($options['enabled']) && $defaults['enabled'] == 'on') ? ' selected="selected"' : '');
-	$off_selected = ($options['enabled'] == 'off' || (empty($options['enabled']) && $defaults['enabled'] == 'off') ? ' selected="selected"' : '');
-	echo '<select id="plugin_sessionslap_options_enabled" name="plugin_sessionslap_options[enabled]">';
-	echo '<option value="on"' . $on_selected . '>' . __('On', 'sessionslap') . '</option>';
-	echo '<option value="off"' . $off_selected . '>' . __('Off', 'sessionslap') . '</option>';
-	echo '</select>';
+	$display  = '<input id="plugin_sessionslap_options_' . $option . '" name="plugin_sessionslap_options[' . $option . ']" size="5" type="text" value="' . (empty($options[ $option ]) ? $defaults[ $option ] : $options[ $option ]) . '"/>';
+	return $display;
 }
-function sessionslap_interval_duration_input_display(){
-	$defaults = sessionslap_get_default_options();
-	$options  = get_option('plugin_sessionslap_options');
-	echo '<input id="plugin_sessionslap_options_interval_duration" name="plugin_sessionslap_options[interval_duration]" size="5" type="text" value="' . (empty($options['interval_duration']) ? $defaults['interval_duration'] : $options['interval_duration']) . '"/>';
-}
-function sessionslap_hang_duration_input_display(){
-	$defaults = sessionslap_get_default_options();
-	$options  = get_option('plugin_sessionslap_options');
-	echo '<input id="plugin_sessionslap_options_hang_duration" name="plugin_sessionslap_options[hang_duration]" size="5" type="text" value="' . (empty($options['hang_duration']) ? $defaults['hang_duration'] : $options['hang_duration'] ) . '"/>';
-}
-function sessionslap_alerts_dropdown_display(){
+function sessionslap_on_off_dropdown($option){
 	$defaults     = sessionslap_get_default_options();
 	$options      = get_option('plugin_sessionslap_options');
-	$on_selected  = ($options['alerts'] == 'on' || (empty($options['alerts']) && $defaults['alerts'] == 'on') ? ' selected="selected"' : '');
-	$off_selected = ($options['alerts'] == 'off' || (empty($options['alerts']) && $defaults['alerts'] == 'off') ? ' selected="selected"' : '');
-	echo '<select id="plugin_sessionslap_options_alerts" name="plugin_sessionslap_options[alerts]">';
-	echo '<option value="on"' . $on_selected . '>' . __('On', 'sessionslap') . '</option>';
-	echo '<option value="off"' . $off_selected . '>' . __('Off', 'sessionslap') . '</option>';
-	echo '</select>';
+	$on_selected  = ($options[ $option ] == 'on' || (empty($options[ $option ]) && $defaults[ $option ] == 'on') ? ' selected="selected"' : '');
+	$off_selected = ($options[ $option ] == 'off' || (empty($options[ $option ]) && $defaults[ $option ] == 'off') ? ' selected="selected"' : '');
+	$display      = '<select id="plugin_sessionslap_options_' . $option . '" name="plugin_sessionslap_options[' . $option . ']">';
+	$display     .= '<option value="on"' . $on_selected . '>' . __('On', 'sessionslap') . '</option>';
+	$display     .= '<option value="off"' . $off_selected . '>' . __('Off', 'sessionslap') . '</option>';
+	$display     .= '</select>';
+	return $display;
 }
+function sessionslap_interval_duration_input_display(){
+	echo sessionslap_on_off_dropdown('interval_duration');
+}
+function sessionslap_hang_duration_input_display(){
+	echo sessionslap_on_off_dropdown('hang_duration');
+}
+function sessionslap_enabled_dropdown_display(){
+	echo sessionslap_on_off_dropdown('enabled');
+}
+function sessionslap_alerts_dropdown_display(){
+	echo sessionslap_on_off_dropdown('alerts');
+}
+
 
 /**
  * Input Sanitizer
