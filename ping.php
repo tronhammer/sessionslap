@@ -38,35 +38,6 @@ function sessionslap_face(){
 	}
 
 	?>
-	<style type="text/css">
-	.sessionslap-alert{
-		position: fixed;
-		z-index: 100000;
-		top: 33px;
-		left: 80%;
-		width: 200px;
-		color: #666 !important;
-		text-shadow: 1px 1px 1px #E1E1E1;
-		background: whitesmoke;
-		padding: 5px 10px;
-		border: 1px solid #E1E1E1;
-		border-radius: 3px;
-		cursor:pointer;
-		text-align:center;
-	}
-	
-	.sessionslap-alert.sessionslap-success{
-		box-shadow: 0px 0px 8px green;
-	}
-	
-	.sessionslap-alert.sessionslap-error{
-		box-shadow: 0px 0px 8px red;
-	}
-	
-	.sessionslap-setting-row{
-		margin: 15px;
-	}
-	</style>
 	<script type="text/javascript">
 	jQuery(function($){
 		window.sessionslap = {
@@ -81,21 +52,27 @@ function sessionslap_face(){
 			},
 			"pinger": function(){
 				$(document).trigger("sessionslap.ping.start");
-				jQuery.post("?", {
-					update: true,
-					r: Math.random()
-				}).success(function(data){
-					if (window.sessionslap.alerts){
-						window.sessionslap.alert("Your session has been updated!", true );
+				jQuery.ajax({
+					url: "?",
+					type: "GET",
+					data: {
+						update: true,
+						r: Math.random()
+					},
+					success: function(data){
+						if (window.sessionslap.alerts){
+							window.sessionslap.alert("Your session has been updated!", true );
+						}
+						$(document).trigger("sessionslap.ping.end.success");
+						console.log("Your session has been updated!");
+					},
+					error: function(data){
+						if (window.sessionslap.alerts){
+							window.sessionslap.alert("There was an issue with your session getting updated!");
+						}
+						$(document).trigger("sessionslap.ping.end.error");
+						console.log("There was an issue with your session getting updated!");
 					}
-					$(document).trigger("sessionslap.ping.end.success");
-					console.log("Your session has been updated!");
-				}).error(function(data){
-					if (window.sessionslap.alerts){
-						window.sessionslap.alert("There was an issue with your session getting updated!");
-					}
-					$(document).trigger("sessionslap.ping.end.error");
-					console.log("There was an issue with your session getting updated!");
 				});
 			},
 			"alert": function(msg, good){

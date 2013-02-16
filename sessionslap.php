@@ -317,8 +317,23 @@ function sessionslap_validate($values){
  */
 add_action('init', 'sessionslap_ping');
 function sessionslap_ping(){
+	// Register JavaScript
 	wp_enqueue_script('jquery');
+	
+	error_log("including the css from ".plugins_url( 'sessionslap.css' , __FILE__ ));
+	
+	// Register CSS
+	wp_register_style(
+		"sessionslap_css",
+		plugins_url( 'sessionslap.css' , __FILE__ ),
+		false,
+		"0.1.0"
+	);
+	wp_enqueue_style("sessionslap_css");
+	
 	require_once( SESSION_SLAP_PATH . "/ping.php");
+	
+	// Append dynamic js to both admin and regular users head.
 	add_action( "admin_head", "sessionslap_face" );
 	add_action( "wp_head", "sessionslap_face" );
 	
