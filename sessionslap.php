@@ -222,10 +222,10 @@ function sessionslap_on_off_dropdown($option){
 	return $display;
 }
 function sessionslap_interval_duration_input_display(){
-	echo sessionslap_on_off_dropdown('interval_duration');
+	echo sessionslap_input('interval_duration');
 }
 function sessionslap_hang_duration_input_display(){
-	echo sessionslap_on_off_dropdown('hang_duration');
+	echo sessionslap_input('hang_duration');
 }
 function sessionslap_enabled_dropdown_display(){
 	echo sessionslap_on_off_dropdown('enabled');
